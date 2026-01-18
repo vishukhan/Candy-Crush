@@ -2,93 +2,54 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<title>Candy Saga - 100+ Levels Edition</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+<title>Candy Saga - Pro Edition</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"/>
 <style>
   :root {
     --gold: #feca57;
-    --ice-glass: rgba(135, 206, 250, 0.4);
     --hard-color: #ff4757;
     --nav-bg: #1e272e;
-    --smooth: all 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
+    --smooth: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   }
 
-  body { margin: 0; padding: 0; height: 100vh; background: #121212; font-family: sans-serif; color: white; overflow: hidden; touch-action: none; }
- #game-wrapper { width: 100%; max-width: 450px; height: 100vh; position: relative; background: #222; margin: auto; display: flex; flex-direction: column; }
+  body { margin: 0; padding: 0; height: 100vh; background: #121212; font-family: sans-serif; color: white; overflow: hidden; touch-action: none; -webkit-user-select: none; }
+  #game-wrapper { width: 100%; max-width: 450px; height: 100vh; position: relative; background: #222; margin: auto; display: flex; flex-direction: column; }
 
   .screen { flex: 1; overflow-y: auto; display: none; padding-bottom: 80px; position: relative; }
   .active-screen { display: flex; flex-direction: column; }
 
-  /* Home Screen */
-  #home-screen { justify-content: center; align-items: center; text-align: center; background: url('https://r2.erweima.ai/ai_image/95460be0-7607-4e78-9e56-3c72b25bc302.jpg') center/cover; }
-  #home-screen::before { content: ''; position: absolute; inset: 0; background: rgba(0, 0, 0, 0.3); backdrop-filter: blur(8px); z-index: 1; }
-  #home-screen .content { position: relative; z-index: 2; background: rgba(0, 0, 0, 0.5); padding: 30px; border-radius: 20px; border: 2px solid var(--gold); margin: 20px; }
-
-  /* Map View - Scrollable for 100 levels */
-/* --- Map Screen (Fixed Background) --- */
-  #map-screen { 
-    background: url('map.jpg') center/cover no-repeat fixed; 
-    overflow-y: scroll; 
-    -webkit-overflow-scrolling: touch;
-  }
-  .map-path { 
-    display: flex; flex-direction: column-reverse; align-items: center; 
-    gap: 60px; padding: 120px 0; min-height: 5500px; 
-    position: relative; z-index: 2;
-    /* Image ke upar halka tint taaki levels saaf dikhen */
-    background: rgba(0, 0, 0, 0.15); 
-  }
-
- .level-node { width: 60px; height: 60px; background: #6c5ce7; border: 4px solid white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; cursor: pointer; position: relative; z-index: 2; font-size: 1.2rem; transition: transform 0.2s; }
-  .level-node.hard { border-color: var(--hard-color); box-shadow: 0 0 15px var(--hard-color); }
-  .level-node.current { background: var(--gold); transform: scale(1.2); box-shadow: 0 0 25px var(--gold); color: #000; border-color: #fff; }
-  .level-node.locked { opacity: 0.4; background: #444; cursor: not-allowed; border-color: #777; }
-
-  /* Game View */
-   #game-screen { display: none; height: 100%; flex-direction: column; background: #000; z-index: 1000; position: absolute; inset: 0; }
-  #header { padding: 10px; background: #1a1a1a; border-bottom: 2px solid #444; z-index: 1000;}
-  .top-row { display: flex; justify-content: space-around; margin-bottom: 5px; }
-  .task-bar { background: #333; padding: 8px; text-align: center; border-radius: 10px; margin: 0 10px; font-size: 0.9rem; border: 1px solid var(--gold); }
-  .stat b { display: block; color: var(--gold); font-size: 1.1rem; }
-
-  #board { position: relative; width: 320px; height: 320px; border: 4px solid #444; border-radius: 8px; margin: auto; touch-action: none; }
-  .candy { position: absolute; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; font-size: 24px; cursor: pointer; transition: var(--smooth); z-index: 5; }
+  /* Backgrounds */
+  #home-screen { justify-content: center; align-items: center; text-align: center; background: url('home.jpg') center/cover no-repeat; }
+  #home-screen::before { content: ''; position: absolute; inset: 0; background: rgba(0, 0, 0, 0.4); backdrop-filter: blur(4px); z-index: 1; }
   
-  /* Navigation */
+  #map-screen { background: url('map.jpg') center/cover no-repeat fixed; overflow-y: scroll; -webkit-overflow-scrolling: touch; }
+  
+  #game-screen { display: none; height: 100%; flex-direction: column; background: url('game.jpg') center/cover no-repeat; z-index: 1000; position: absolute; inset: 0; }
+  #game-screen::before { content: ''; position: absolute; inset: 0; background: rgba(0, 0, 0, 0.3); backdrop-filter: blur(2px); z-index: 0; }
+
+  .content { position: relative; z-index: 2; background: rgba(0, 0, 0, 0.6); padding: 30px; border-radius: 20px; border: 2px solid var(--gold); margin: 20px; }
+
+  /* Levels */
+  .map-path { display: flex; flex-direction: column-reverse; align-items: center; gap: 60px; padding: 120px 0; min-height: 5500px; position: relative; background: rgba(0,0,0,0.2); }
+  .level-node { width: 60px; height: 60px; background: #6c5ce7; border: 4px solid white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; cursor: pointer; position: relative; z-index: 2; font-size: 1.2rem; transition: transform 0.2s; }
+  .level-node.current { background: var(--gold); transform: scale(1.2); box-shadow: 0 0 25px var(--gold); color: #000; }
+  .level-node.locked { opacity: 0.6; background: #444; cursor: not-allowed; }
+
+  /* Board */
+  #header { padding: 15px; background: rgba(26, 26, 26, 0.8); border-bottom: 2px solid #444; z-index: 1; }
+  .top-row { display: flex; justify-content: space-around; margin-bottom: 10px; }
+  .task-bar { background: rgba(51, 51, 51, 0.9); padding: 10px; text-align: center; border-radius: 10px; border: 1px solid var(--gold); }
+  #board-container { flex: 1; display: flex; align-items: center; justify-content: center; touch-action: none; z-index: 1; }
+  #board { position: relative; width: 320px; height: 320px; border: 4px solid #444; border-radius: 12px; background: rgba(0,0,0,0.5); overflow: hidden; }
+  
+  .candy { position: absolute; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; font-size: 28px; transition: var(--smooth); z-index: 5; pointer-events: none; }
+  
+  /* UI Elements */
   #nav-bar { position: absolute; bottom: 0; width: 100%; height: 70px; background: var(--nav-bg); display: flex; justify-content: space-around; align-items: center; border-top: 1px solid #444; z-index: 500; }
   .nav-item { flex: 1; text-align: center; color: #888; font-size: 0.8rem; cursor: pointer; }
   .nav-item.active { color: var(--gold); }
-  .nav-item span { display: block; font-size: 20px; }
-
-  .btn { padding: 12px 30px; background: #ff4757; color: white; border: none; border-radius: 25px; font-weight: bold; cursor: pointer; }
+  .btn { padding: 12px 30px; background: var(--hard-color); color: white; border: none; border-radius: 25px; font-weight: bold; cursor: pointer; position: relative; z-index: 2; }
   .overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.9); display: none; flex-direction: column; align-items: center; justify-content: center; z-index: 2000; }
-  
- /* --- Home Screen (home.jpg) --- */
-  #home-screen { 
-    justify-content: center; align-items: center; text-align: center; 
-    background: url('home.jpg') center/cover no-repeat; 
-  }
-  #home-screen::before { 
-    content: ''; position: absolute; inset: 0; 
-    background: rgba(0, 0, 0, 0.35); backdrop-filter: blur(3px); z-index: 1; 
-  }
-  #home-screen .content { 
-    position: relative; z-index: 2; background: rgba(0, 0, 0, 0.6); 
-    padding: 30px; border-radius: 20px; border: 2px solid var(--gold); margin: 20px; 
-  }
-
-  /* --- Game Screen (game.jpg) --- */
-  #game-screen { 
-    display: none; height: 100%; flex-direction: column; 
-    background: url('game.jpg') center/cover no-repeat; 
-    z-index: 1000; position: absolute; inset: 0; 
-  }
-  /* Board ke peeche thoda contrast dene ke liye */
-  #game-screen::before {
-    content: ''; position: absolute; inset: 0;
-    background: rgba(0, 0, 0, 0.2); backdrop-filter: blur(2px); z-index: 0;
-  }
-
 </style>
 </head>
 <body onclick="unlockAudio()">
@@ -99,7 +60,7 @@
   <div id="home-screen" class="screen active-screen">
     <div class="content">
         <h1 style="color: var(--gold); font-size: 2.5rem; margin:0;">CANDY SAGA</h1>
-        <p>100+ Levels of Sweetness</p>
+        <p>100+ Levels & Daily Rewards</p>
         <button class="btn" style="background: var(--gold); color: black;" onclick="switchTab('map')">START ADVENTURE</button>
     </div>
   </div>
@@ -107,11 +68,11 @@
   <div id="map-screen" class="screen"><div class="map-path" id="levelPath"></div></div>
   
   <div id="daily-screen" class="screen">
-    <div style="background: rgba(255,255,255,0.1); margin: 50px 20px; padding: 30px; border-radius: 20px; text-align: center; border: 1px solid var(--gold);">
+    <div class="content" style="text-align: center; margin-top: 80px;">
       <h2>Daily Gift</h2>
-      <div style="font-size: 50px;">🎁</div>
-      <p id="timerMsg">Collect your 200 coins!</p>
-      <button class="btn" id="claimBtn" onclick="claimCoins()" style="background:var(--gold); color:black">CLAIM</button>
+      <div style="font-size: 60px; margin: 20px 0;">🎁</div>
+      <p id="timerMsg">Collect 200 free coins every day!</p>
+      <button class="btn" id="claimBtn" onclick="claimCoins()" style="background:var(--gold); color:black; width: 80%;">CLAIM 200 COINS</button>
     </div>
   </div>
 
@@ -124,20 +85,19 @@
       </div>
       <div class="task-bar" id="taskDesc">Target: 1000</div>
     </div>
-    <div style="flex:1; display:flex"><div id="board"></div></div>
-    <div style="padding: 40px; text-align: center; z-index: 1000;"><button class="btn" onclick="exitToMap()">GIVE UP</button></div>
+    <div id="board-container"><div id="board"></div></div>
+    <div style="padding: 20px; text-align: center; z-index: 2;"><button class="btn" onclick="exitToMap()">GIVE UP</button></div>
   </div>
 
   <div id="win-overlay" class="overlay">
     <h1 style="color:var(--gold); font-size: 2.5rem;">LEVEL CLEAR!</h1>
-    <p id="bonusText">+50 Coins Reward</p>
     <button class="btn" id="nextLvlBtn" style="background:#2ed573">NEXT LEVEL</button>
   </div>
 
   <div id="nav-bar">
-    <div class="nav-item active" id="tab-home" onclick="switchTab('home')"><span>🏠</span>Home</div>
-    <div class="nav-item" id="tab-map" onclick="switchTab('map')"><span>🗺️</span>Map</div>
-    <div class="nav-item" id="tab-daily" onclick="switchTab('daily')"><span>🎁</span>Daily</div>
+    <div class="nav-item active" onclick="switchTab('home')">🏠<br>Home</div>
+    <div class="nav-item" onclick="switchTab('map')">🗺️<br>Map</div>
+    <div class="nav-item" onclick="switchTab('daily')">🎁<br>Daily</div>
   </div>
 </div>
 
@@ -148,38 +108,71 @@ function playSfx(freq, type, dur) {
   if (!aCtx) return;
   const osc = aCtx.createOscillator(); const gain = aCtx.createGain();
   osc.type = type; osc.frequency.setValueAtTime(freq, aCtx.currentTime);
-  gain.gain.setValueAtTime(0.1, aCtx.currentTime); gain.gain.exponentialRampToValueAtTime(0.0001, aCtx.currentTime + dur);
+  gain.gain.setValueAtTime(0.05, aCtx.currentTime);
   osc.connect(gain); gain.connect(aCtx.destination);
   osc.start(); osc.stop(aCtx.currentTime + dur);
 }
-const sfx = { click:()=>playSfx(600,'sine',0.1), swap:()=>playSfx(400,'triangle',0.15), pop:()=>playSfx(800,'sine',0.1), win:()=>playSfx(1200,'sine',0.5) };
+const sfx = { swap:()=>playSfx(400,'triangle',0.1), pop:()=>playSfx(800,'sine',0.05), win:()=>playSfx(1000,'sine',0.3) };
 
 const SIZE = 8; const CELL = 40;
 const CANDIES = ['🍎', '🍋', '🍇', '💎', '🍭', '🍓'];
+// Initialize Data
 let userData = JSON.parse(localStorage.getItem('candyData')) || { coins: 0, unlocked: 1, lastClaim: 0 };
-let state = { currentLvl: 1, moves: 25, board: [], score: 0, targetScore: 0, isLock: false };
+let state = { currentLvl: 1, moves: 25, board: [], score: 0, isLock: false, dragStart: null };
 
 function save() { localStorage.setItem('candyData', JSON.stringify(userData)); document.getElementById('coinBal').innerText = userData.coins; }
 
-function switchTab(t) {
-  sfx.click();
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active-screen'));
-  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-  document.getElementById(t + '-screen').classList.add('active-screen');
-  document.getElementById('tab-' + t).classList.add('active');
-  if(t === 'map') initMap();
+// --- Daily 24h Logic ---
+function updateDailyUI() {
+    const now = Date.now();
+    const twentyFourHours = 24 * 60 * 60 * 1000;
+    const timeLeft = (userData.lastClaim + twentyFourHours) - now;
+    const btn = document.getElementById('claimBtn');
+    const msg = document.getElementById('timerMsg');
+
+    if (timeLeft > 0) {
+        const hours = Math.floor(timeLeft / (1000 * 60 * 60));
+        const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+        btn.innerText = "LOCKED";
+        btn.disabled = true;
+        btn.style.background = "#444";
+        msg.innerText = `Come back in ${hours}h ${minutes}m for more!`;
+    } else {
+        btn.innerText = "CLAIM 200 COINS";
+        btn.disabled = false;
+        btn.style.background = "var(--gold)";
+        msg.innerText = "Your daily gift is ready!";
+    }
 }
 
+function claimCoins() {
+    const now = Date.now();
+    const twentyFourHours = 24 * 60 * 60 * 1000;
+    if (now - userData.lastClaim >= twentyFourHours) {
+        userData.coins += 200;
+        userData.lastClaim = now;
+        save();
+        updateDailyUI();
+        alert("Sweet! 200 coins added.");
+    }
+}
+
+function switchTab(t) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active-screen'));
+  document.getElementById(t + '-screen').classList.add('active-screen');
+  if(t === 'map') initMap();
+  if(t === 'daily') updateDailyUI();
+}
+
+// --- Game Logic (Same Smooth Version) ---
 function initMap() {
   const path = document.getElementById('levelPath'); path.innerHTML = '';
-  // CREATING 100 LEVELS
   for(let i=1; i<=100; i++) {
     const node = document.createElement('div');
     const isLocked = i > userData.unlocked;
-    node.className = `level-node ${i==userData.unlocked?'current':''} ${isLocked?'locked':''} ${i%10==0?'hard':''}`;
+    node.className = `level-node ${i==userData.unlocked?'current':''} ${isLocked?'locked':''}`;
     node.innerText = i;
-    // Wavy path logic
-    node.style.marginLeft = (Math.sin(i * 0.6) * 70) + 'px';
+    node.style.marginLeft = (Math.sin(i * 0.6) * 65) + 'px';
     if(!isLocked) node.onclick = () => startLevel(i);
     path.appendChild(node);
   }
@@ -187,17 +180,24 @@ function initMap() {
 
 function startLevel(lvl) {
   state.currentLvl = lvl; state.score = 0; state.isLock = false;
-  // DIFFICULTY ENGINE
-  state.targetScore = 1000 + (lvl * 250);
-  state.moves = Math.max(15, 30 - Math.floor(lvl / 5));
-  
+  state.targetScore = 1000 + (lvl * 150);
+  state.moves = Math.max(15, 30 - Math.floor(lvl / 10));
   document.getElementById('game-screen').style.display = 'flex';
   document.getElementById('win-overlay').style.display = 'none';
   createBoard(); updateUI();
 }
 
 function createBoard() {
-  const boardEl = document.getElementById('board'); boardEl.innerHTML = ''; state.board = [];
+  const boardEl = document.getElementById('board'); 
+  boardEl.innerHTML = ''; state.board = [];
+  boardEl.onmousedown = boardEl.ontouchstart = (e) => {
+    if(state.isLock) return;
+    const p = e.touches ? e.touches[0] : e;
+    const rect = boardEl.getBoundingClientRect();
+    const c = Math.floor((p.clientX - rect.left) / CELL);
+    const r = Math.floor((p.clientY - rect.top) / CELL);
+    if(r >= 0 && r < SIZE && c >= 0 && c < SIZE) state.dragStart = { x: p.clientX, y: p.clientY, r, c };
+  };
   for(let r=0; r<SIZE; r++) {
     state.board[r] = [];
     for(let c=0; c<SIZE; c++) {
@@ -211,42 +211,36 @@ function createBoard() {
 function makeCandy(r, c) {
   const div = document.createElement('div');
   div.className = 'candy'; div.innerHTML = CANDIES[Math.floor(Math.random()*CANDIES.length)];
-  div.dataset.r = r; div.dataset.c = c;
   div.style.left = c*CELL+'px'; div.style.top = r*CELL+'px';
-  div.ontouchstart = div.onmousedown = (e) => {
-    if(state.isLock) return;
-    const p = e.touches ? e.touches[0] : e;
-    state.dragStart = { x: p.clientX, y: p.clientY, r, c };
-  };
   return div;
 }
 
-window.onmouseup = window.ontouchend = (e) => {
-  if(!state.dragStart || state.isLock) return;
-  const p = e.changedTouches ? e.changedTouches[0] : e;
-  const dx = p.clientX - state.dragStart.x, dy = p.clientY - state.dragStart.y;
-  if(Math.abs(dx)>20 || Math.abs(dy)>20) {
-    let r1 = state.dragStart.r, c1 = state.dragStart.c, r2 = r1, c2 = c1;
-    if(Math.abs(dx) > Math.abs(dy)) c2 += (dx>0?1:-1); else r2 += (dy>0?1:-1);
-    if(r2>=0 && r2<SIZE && c2>=0 && c2<SIZE) trySwap(r1, c1, r2, c2);
-  }
-  state.dragStart = null;
+window.ontouchend = window.onmouseup = (e) => {
+    if(!state.dragStart || state.isLock) return;
+    const p = e.changedTouches ? e.changedTouches[0] : e;
+    const dx = p.clientX - state.dragStart.x;
+    const dy = p.clientY - state.dragStart.y;
+    if(Math.abs(dx) > 15 || Math.abs(dy) > 15) {
+        let r1 = state.dragStart.r, c1 = state.dragStart.c, r2 = r1, c2 = c1;
+        if(Math.abs(dx) > Math.abs(dy)) c2 += (dx > 0 ? 1 : -1);
+        else r2 += (dy > 0 ? 1 : -1);
+        if(r2 >= 0 && r2 < SIZE && c2 >= 0 && c2 < SIZE) trySwap(r1, c1, r2, c2);
+    }
+    state.dragStart = null;
 };
 
 async function trySwap(r1, c1, r2, c2) {
-  state.isLock = true; sfx.swap();
+  state.isLock = true;
   const a = state.board[r1][c1], b = state.board[r2][c2];
   a.style.left = c2*CELL+'px'; a.style.top = r2*CELL+'px';
   b.style.left = c1*CELL+'px'; b.style.top = r1*CELL+'px';
   await new Promise(r => setTimeout(r, 250));
-  state.board[r1][c1]=b; state.board[r2][c2]=a;
-  a.dataset.r=r2; a.dataset.c=c2; b.dataset.r=r1; b.dataset.c=c1;
-  if(checkMatches().length > 0) { state.moves--; await processMatches(); }
+  state.board[r1][c1] = b; state.board[r2][c2] = a;
+  if(checkMatches().length > 0) { sfx.swap(); state.moves--; await processMatches(); }
   else {
-    a.style.left=c1*CELL+'px'; a.style.top=r1*CELL+'px';
-    b.style.left=c2*CELL+'px'; b.style.top=r2*CELL+'px';
-    state.board[r1][c1]=a; state.board[r2][c2]=b;
-    a.dataset.r=r1; a.dataset.c=c1; b.dataset.r=r2; b.dataset.c=c2;
+    a.style.left = c1*CELL+'px'; a.style.top = r1*CELL+'px';
+    b.style.left = c2*CELL+'px'; b.style.top = r2*CELL+'px';
+    state.board[r1][c1] = a; state.board[r2][c2] = b;
     state.isLock = false;
   }
   updateUI();
@@ -258,34 +252,42 @@ async function processMatches() {
     sfx.pop();
     matches.forEach(c => {
       state.score += 20;
-      c.style.transform = 'scale(0)'; 
-      state.board[c.dataset.r][c.dataset.c] = null;
+      c.style.transform = 'scale(0)';
+      for(let r=0; r<SIZE; r++) {
+          for(let col=0; col<SIZE; col++) { if(state.board[r][col] === c) state.board[r][col] = null; }
+      }
     });
+    await new Promise(r => setTimeout(r, 200));
+    matches.forEach(c => c.remove());
+    await fillBoard();
     await new Promise(r => setTimeout(r, 250));
-    document.querySelectorAll('.candy').forEach(c => { if(!state.board[c.dataset.r][c.dataset.c]) c.remove(); });
-    fillBoard(); await new Promise(r => setTimeout(r, 250));
-    matches = checkMatches(); updateUI();
+    matches = checkMatches();
+    updateUI();
   }
-  state.isLock = false; checkStatus();
+  state.isLock = false;
+  checkStatus();
 }
 
-function fillBoard() {
+async function fillBoard() {
   for(let c=0; c<SIZE; c++) {
-    let empty = [];
+    let emptySpaces = 0;
     for(let r=SIZE-1; r>=0; r--) {
-      if(!state.board[r][c]) empty.push(r);
-      else if(empty.length > 0) {
-        let tr = empty.shift(); let candy = state.board[r][c];
-        state.board[tr][c] = candy; state.board[r][c] = null;
-        candy.dataset.r = tr; candy.style.top = tr * CELL + 'px';
-        empty.push(r); empty.sort((a,b) => b-a);
+      if(!state.board[r][c]) emptySpaces++;
+      else if(emptySpaces > 0) {
+        let candy = state.board[r][c];
+        state.board[r+emptySpaces][c] = candy;
+        state.board[r][c] = null;
+        candy.style.top = (r + emptySpaces) * CELL + 'px';
       }
     }
-    empty.forEach(r => {
-      const candy = makeCandy(r, c); state.board[r][c] = candy;
-      candy.style.top = '-40px'; document.getElementById('board').appendChild(candy);
-      setTimeout(() => candy.style.top = r * CELL + 'px', 50);
-    });
+    for(let i=0; i<emptySpaces; i++) {
+      let r = emptySpaces - 1 - i;
+      const candy = makeCandy(r, c);
+      state.board[r][c] = candy;
+      candy.style.top = '-50px';
+      document.getElementById('board').appendChild(candy);
+      setTimeout(() => candy.style.top = r * CELL + 'px', 20);
+    }
   }
 }
 
@@ -293,15 +295,19 @@ function checkMatches() {
   let matched = new Set(), b = state.board;
   for(let r=0; r<SIZE; r++) {
     for(let c=0; c<SIZE-2; c++) {
-      if(b[r][c].innerText == b[r][c+1].innerText && b[r][c].innerText == b[r][c+2].innerText) {
-        matched.add(b[r][c]); matched.add(b[r][c+1]); matched.add(b[r][c+2]);
+      if(b[r][c] && b[r][c+1] && b[r][c+2]) {
+          if(b[r][c].innerText == b[r][c+1].innerText && b[r][c].innerText == b[r][c+2].innerText) {
+            matched.add(b[r][c]); matched.add(b[r][c+1]); matched.add(b[r][c+2]);
+          }
       }
     }
   }
   for(let c=0; c<SIZE; c++) {
     for(let r=0; r<SIZE-2; r++) {
-      if(b[r][c].innerText == b[r+1][c].innerText && b[r][c].innerText == b[r+2][c].innerText) {
-        matched.add(b[r][c]); matched.add(b[r+1][c]); matched.add(b[r+2][c]);
+      if(b[r][c] && b[r+1][c] && b[r+2][c]) {
+          if(b[r][c].innerText == b[r+1][c].innerText && b[r][c].innerText == b[r+2][c].innerText) {
+            matched.add(b[r][c]); matched.add(b[r+1][c]); matched.add(b[r+2][c]);
+          }
       }
     }
   }
@@ -310,11 +316,12 @@ function checkMatches() {
 
 function checkStatus() {
   if(state.score >= state.targetScore) {
-    sfx.win(); if(state.currentLvl == userData.unlocked) userData.unlocked++;
+    sfx.win();
+    if(state.currentLvl == userData.unlocked) userData.unlocked++;
     userData.coins += 50; save();
     document.getElementById('win-overlay').style.display = 'flex';
     document.getElementById('nextLvlBtn').onclick = () => startLevel(state.currentLvl + 1);
-  } else if(state.moves <= 0) { alert("Try Again!"); exitToMap(); }
+  } else if(state.moves <= 0) { alert("Try again!"); exitToMap(); }
 }
 
 function updateUI() {
