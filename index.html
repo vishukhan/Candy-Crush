@@ -2,110 +2,107 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<title>Candy Saga - Final Pro Edition</title>
+<title>Candy Saga Pro - 250 Levels & Life Refill</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"/>
 <style>
   :root { --gold: #feca57; --nav-bg: #1e272e; --teddy-bg: rgba(255, 215, 0, 0.4); }
   
-  body { margin: 0; padding: 0; height: 100vh; background: #121212; font-family: sans-serif; color: white; overflow: hidden; touch-action: none; }
+  body { margin: 0; padding: 0; height: 100vh; background: #000; font-family: sans-serif; color: white; overflow: hidden; touch-action: none; }
   
   #game-wrapper { 
     width: 100%; max-width: 450px; height: 100vh; position: relative; 
     background: #000; margin: auto; display: flex; flex-direction: column; 
   }
 
-  /* Screens */
-  .screen { 
-    position: absolute; top: 0; left: 0; width: 100%; height: calc(100% - 75px); 
-    display: none; flex-direction: column; z-index: 10;
-  }
+  /* Screens with Background Images */
+  .screen { position: absolute; top: 0; left: 0; width: 100%; height: calc(100% - 75px); display: none; flex-direction: column; z-index: 10; }
   .active-screen { display: flex; }
 
-  /* HOME SCREEN BACKGROUND ADDED */
-  #home-screen { 
-    background: url('home.jpg') center/cover no-repeat; 
-    justify-content: center; 
-    align-items: center;
-  }
+  #home-screen { background: url('home.jpg') center/cover no-repeat; justify-content: center; align-items: center; }
+  #map-screen { overflow-y: scroll; z-index: 20; background: url('map.jpg') center/cover repeat-y; }
+  #game-screen { background: url('game.jpg') center/cover no-repeat; z-index: 5000; height: 100%; }
 
-  #map-screen { overflow-y: scroll; z-index: 20; background: url('map.jpg') center/cover; }
-  
-  #game-screen { 
-    background: url('game.jpg') center/cover; 
-    z-index: 5000; height: 100%; 
-  }
-
-  /* BOARD CENTERED */
-  #board-container { 
-    flex-grow: 1; display: flex; align-items: center; justify-content: center; width: 100%;
-    margin-top: -30px; 
-  }
-
+  #board-container { flex-grow: 1; display: flex; align-items: center; justify-content: center; width: 100%; margin-top: -30px; }
   #board { 
     position: relative; width: 320px; height: 320px; 
     border: 6px solid rgba(255,255,255,0.2); border-radius: 15px; 
-    background: rgba(0,0,0,0.7); box-shadow: 0 0 40px rgba(0,0,0,0.8);
-    transition: transform 0.3s ease;
+    background: rgba(0,0,0,0.75); box-shadow: 0 0 40px rgba(0,0,0,0.9);
   }
 
-  /* Animations */
-  @keyframes hintPulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.15); filter: brightness(1.5); } }
-  .hint-active { animation: hintPulse 0.6s infinite; z-index: 100; }
-  
-  @keyframes boardShake { 0%, 100% { transform: rotate(0); } 25% { transform: rotate(3deg); } 75% { transform: rotate(-3deg); } }
-  .shuffling { animation: boardShake 0.15s infinite; }
+  /* Ad Overlay */
+  #ad-overlay {
+    position: absolute; inset: 0; background: #000; z-index: 9999;
+    display: none; flex-direction: column; align-items: center; justify-content: center;
+  }
 
-  /* Elements */
+  /* VFX & Animations */
+  @keyframes candyPop { 0% { transform: scale(1); opacity: 1; } 100% { transform: scale(0); opacity: 0; } }
+  .pop-effect { animation: candyPop 0.3s forwards; }
+  
+  @keyframes boardShake { 0%, 100% { transform: translate(0,0); } 25% { transform: translate(5px, 5px); } 75% { transform: translate(-5px, -5px); } }
+  .shake { animation: boardShake 0.2s; }
+
+  .hint-active { animation: hintPulse 0.6s infinite; z-index: 100; }
+  @keyframes hintPulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.2); filter: brightness(1.3); } }
+
+  /* Game Elements */
   .jelly-cell { position: absolute; width: 40px; height: 40px; border: 0.1px solid rgba(255,255,255,0.05); display: flex; align-items: center; justify-content: center; }
   .has-teddy { background: var(--teddy-bg); box-shadow: inset 0 0 15px gold; border-radius: 8px; }
-  .candy { position: absolute; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; font-size: 28px; transition: all 0.2s ease; z-index: 5; pointer-events: none; }
+  .candy { position: absolute; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; font-size: 28px; transition: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 5; pointer-events: none; }
 
-  /* UI & Nav */
+  /* UI Styling */
   #mission-bar { background: rgba(0,0,0,0.85); padding: 15px; display: flex; justify-content: space-around; align-items: center; width: 100%; box-sizing: border-box; border-bottom: 2px solid var(--gold); }
-  .btn { padding: 12px 40px; border-radius: 30px; border: none; font-weight: bold; background: var(--gold); color: #000; cursor: pointer; font-size: 1.1rem; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
+  .btn { padding: 12px 40px; border-radius: 30px; border: none; font-weight: bold; background: var(--gold); color: #000; cursor: pointer; font-size: 1.1rem; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
+  
   #nav-bar { position: absolute; bottom: 0; width: 100%; height: 75px; background: var(--nav-bg); display: flex; justify-content: space-around; align-items: center; z-index: 6000; border-top: 1px solid #333; }
-  .nav-tab { text-align: center; color: #888; font-size: 0.8rem; cursor: pointer; flex: 1; }
+  .nav-tab { text-align: center; color: #888; font-size: 0.8rem; flex: 1; cursor: pointer; }
   .nav-tab.active { color: var(--gold); font-weight: bold; }
 
-  /* Overlays */
   .overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.95); display: none; flex-direction: column; align-items: center; justify-content: center; z-index: 7000; text-align: center; }
 </style>
 </head>
 <body onclick="unlockAudio()">
 
 <div id="game-wrapper">
+  <div id="ad-overlay">
+    <div style="color:var(--gold); font-size: 1.5rem; margin-bottom: 20px;">LOADING...</div>
+    <div style="width: 280px; height: 200px; background: #222; border: 2px dashed #444; display: flex; align-items: center; justify-content: center;">
+        <span style="opacity: 0.5;">Sponsored Content</span>
+    </div>
+    <p id="ad-timer" style="margin-top: 20px; font-size: 0.9rem; opacity: 0.8;">Please wait 2s</p>
+  </div>
+
   <div style="position: absolute; top: 15px; width: 100%; display: flex; justify-content: space-around; z-index: 4000; pointer-events: none;">
     <div style="background:rgba(0,0,0,0.8); padding:5px 20px; border-radius:20px; border:1px solid var(--gold); font-weight:bold;">❤️ <span id="lifeVal">5</span></div>
     <div style="background:rgba(0,0,0,0.8); padding:5px 20px; border-radius:20px; border:1px solid var(--gold); font-weight:bold;">🪙 <span id="coinBal">0</span></div>
   </div>
 
   <div id="home-screen" class="screen active-screen">
-    <h1 style="color:var(--gold); font-size:3.2rem; text-shadow: 4px 4px #000; margin-bottom: 30px; text-align: center;">CANDY SAGA</h1>
-    <button class="btn" onclick="switchTab('map')">PLAY GAME</button>
+    <h1 style="color:var(--gold); font-size:3.5rem; text-shadow: 4px 4px #000; margin-bottom: 40px; text-align: center;">CANDY<br>SAGA</h1>
+    <div id="refill-timer" style="color:white; margin-bottom: 10px; font-size: 0.8rem; opacity: 0.7;"></div>
+    <button class="btn" id="playBtn" onclick="switchTab('map')">PLAY GAME</button>
   </div>
 
   <div id="map-screen" class="screen">
-    <div class="map-path" id="levelPath" style="display: flex; flex-direction: column-reverse; align-items: center; gap: 70px; padding: 100px 0; min-height: 2000px;"></div>
+    <div id="levelPath" style="display: flex; flex-direction: column-reverse; align-items: center; gap: 75px; padding: 120px 0; min-height: 12000px;"></div>
   </div>
 
-  <div id="daily-screen" class="screen" style="justify-content: center; align-items: center; background:#1e272e;">
-    <h2>DAILY GIFT</h2>
+  <div id="daily-screen" class="screen" style="justify-content: center; align-items: center;">
+    <h2 style="color:var(--gold)">DAILY REWARD</h2>
     <div style="font-size: 100px; margin: 30px;">🎁</div>
-    <button class="btn" id="claimBtn" onclick="claimDaily()">CLAIM 200 🪙</button>
+    <button class="btn" onclick="claimDaily()">COLLECT 200 🪙</button>
   </div>
 
   <div id="game-screen" class="screen">
     <div id="mission-bar">
-        <div id="targetTxt" style="color:var(--gold); font-size: 1.2rem;">Target...</div>
-        <div style="font-weight: bold;">MOVES: <span id="moveVal">25</span></div>
+        <div id="targetTxt" style="color:var(--gold); font-size: 1.1rem; font-weight: bold;">Target...</div>
+        <div style="font-weight: bold;">MOVES: <span id="moveVal" style="color:#ff4757">25</span></div>
     </div>
-    
     <div id="board-container">
         <div id="board"></div>
     </div>
-
     <div style="padding-bottom: 30px; text-align: center;">
-        <button class="btn" style="background:#ff4757; color:white;" onclick="exitToMap()">EXIT GAME</button>
+        <button class="btn" style="background:#ff4757; color:white;" onclick="exitToMap()">QUIT</button>
     </div>
   </div>
 
@@ -116,60 +113,150 @@
   </div>
 
   <div id="win-overlay" class="overlay">
-    <h1 style="color:#2ed573; font-size:3rem;">WON!</h1>
-    <p style="font-size: 1.2rem; margin-bottom: 20px;">+50 Coins Rewarded 🪙</p>
+    <h1 style="color:#2ed573; font-size:3.5rem; text-shadow: 2px 2px #000;">VICTORY!</h1>
+    <p style="font-size: 1.2rem;">Level Complete<br>+50 Coins 🪙</p><br>
     <button class="btn" onclick="exitToMap()">CONTINUE</button>
   </div>
+  
   <div id="lose-overlay" class="overlay">
-    <h1 style="color:#ff4757; font-size:3rem;">FAILED</h1>
+    <h1 style="color:#ff4757; font-size:3.5rem; text-shadow: 2px 2px #000;">FAILED</h1>
+    <p>Better luck next time!</p><br>
     <button class="btn" onclick="exitToMap()">RETRY</button>
   </div>
 </div>
 
 <script>
+// --- Audio System ---
+const sounds = {
+    pop: [440, 880, 0.1, 'sine'],
+    swap: [150, 300, 0.1, 'triangle'],
+    win: [523, 1046, 0.5, 'square'],
+    fail: [200, 100, 0.5, 'sawtooth']
+};
 let aCtx = null;
 function unlockAudio() { if(!aCtx) aCtx = new (window.AudioContext || window.webkitAudioContext)(); }
-
-const SIZE = 8, CELL = 40, CANDIES = ['🍎', '🍋', '🍇', '💎', '🍭', '🍓'];
-let userData = JSON.parse(localStorage.getItem('candy_v10')) || { coins: 0, unlocked: 1, lives: 5, lastDaily: 0 };
-let state = { currentLvl: 1, moves: 25, board: [], jelly: [], isLock: false, dragStart: null, type: 'teddy', target: 0, current: 0, hintTimer: null };
-
-function save() { 
-    localStorage.setItem('candy_v10', JSON.stringify(userData));
-    document.getElementById('coinBal').innerText = userData.coins;
-    document.getElementById('lifeVal').innerText = userData.lives;
+function playSFX(type) {
+    if(!aCtx) return;
+    const [f1, f2, dur, wave] = sounds[type];
+    const osc = aCtx.createOscillator();
+    const gain = aCtx.createGain();
+    osc.type = wave;
+    osc.frequency.setValueAtTime(f1, aCtx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(f2, aCtx.currentTime + dur);
+    gain.gain.setValueAtTime(0.1, aCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.01, aCtx.currentTime + dur);
+    osc.connect(gain); gain.connect(aCtx.destination);
+    osc.start(); osc.stop(aCtx.currentTime + dur);
 }
 
+// --- Ad System ---
+function showAd(callback) {
+    const ad = document.getElementById('ad-overlay');
+    ad.style.display = 'flex';
+    let count = 2; 
+    const interval = setInterval(() => {
+        count--;
+        if(count <= 0) {
+            clearInterval(interval);
+            ad.style.display = 'none';
+            if(callback) callback();
+        }
+    }, 1000);
+}
+
+// --- Life & Game Logic ---
+const SIZE = 8, CELL = 40, CANDIES = ['🍎', '🍋', '🍇', '💎', '🍭', '🍓'];
+const REFILL_TIME = 3600 * 1000; // 1 Hour in milliseconds
+
+let userData = JSON.parse(localStorage.getItem('candy_pro_v250')) || { 
+    coins: 0, 
+    unlocked: 1, 
+    lives: 5, 
+    lastDaily: 0, 
+    lastLifeTime: Date.now() 
+};
+
+function checkLifeRefill() {
+    if (userData.lives < 5) {
+        let now = Date.now();
+        let diff = now - userData.lastLifeTime;
+        let livesToAdd = Math.floor(diff / REFILL_TIME);
+        
+        if (livesToAdd > 0) {
+            userData.lives = Math.min(5, userData.lives + livesToAdd);
+            userData.lastLifeTime = now - (diff % REFILL_TIME); // Carry over leftover time
+            save();
+        }
+        
+        // Update visual timer on Home Screen
+        let nextLifeIn = REFILL_TIME - (diff % REFILL_TIME);
+        let mins = Math.floor(nextLifeIn / 60000);
+        let secs = Math.floor((nextLifeIn % 60000) / 1000);
+        document.getElementById('refill-timer').innerText = `Next life in: ${mins}:${secs < 10 ? '0' : ''}${secs}`;
+    } else {
+        document.getElementById('refill-timer').innerText = "";
+    }
+}
+
+// Check refill every second
+setInterval(checkLifeRefill, 1000);
+
+function save() { 
+    localStorage.setItem('candy_pro_v250', JSON.stringify(userData));
+    document.getElementById('coinBal').innerText = userData.coins;
+    document.getElementById('lifeVal').innerText = userData.lives;
+    
+    // Disable play button if no lives
+    const playBtn = document.getElementById('playBtn');
+    if(userData.lives <= 0) {
+        playBtn.style.opacity = "0.5";
+        playBtn.innerText = "NO LIVES";
+    } else {
+        playBtn.style.opacity = "1";
+        playBtn.innerText = "PLAY GAME";
+    }
+}
+
+let state = { currentLvl: 1, moves: 25, board: [], jelly: [], isLock: false, dragStart: null, type: 'teddy', target: 0, current: 0, hintTimer: null };
+
 function switchTab(t) {
-    document.querySelectorAll('.screen').forEach(s => s.style.display = 'none');
-    document.querySelectorAll('.nav-tab').forEach(n => n.classList.remove('active'));
-    document.getElementById(t + '-screen').style.display = 'flex';
-    document.getElementById('tab-' + t).classList.add('active');
-    if(t === 'map') initMap();
+    if(t === 'map' && userData.lives <= 0) {
+        alert("Wait for life refill or come back later!");
+        return;
+    }
+    showAd(() => {
+        document.querySelectorAll('.screen').forEach(s => s.style.display = 'none');
+        document.querySelectorAll('.nav-tab').forEach(n => n.classList.remove('active'));
+        document.getElementById(t + '-screen').style.display = 'flex';
+        document.getElementById('tab-' + t).classList.add('active');
+        if(t === 'map') initMap();
+    });
 }
 
 function initMap() {
     const path = document.getElementById('levelPath'); path.innerHTML = '';
-    for(let i=1; i<=50; i++) {
+    for(let i=1; i<=250; i++) {
         const node = document.createElement('div');
-        node.style = `width: 60px; height: 60px; background: ${i <= userData.unlocked ? '#6c5ce7' : '#333'}; border: 4px solid #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; box-shadow: 0 5px 15px #000; cursor: pointer; color: white; margin-left: ${Math.sin(i * 0.9) * 85}px;`;
+        node.style = `width: 60px; height: 60px; background: ${i <= userData.unlocked ? '#6c5ce7' : '#333'}; border: 4px solid #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; box-shadow: 0 5px 15px #000; cursor: pointer; color: white; margin-left: ${Math.sin(i * 0.8) * 90}px;`;
         node.innerHTML = i;
         if(i > userData.unlocked) node.style.opacity = "0.5";
-        if(i <= userData.unlocked) node.onclick = () => startLevel(i);
+        if(i <= userData.unlocked) node.onclick = () => {
+            if(userData.lives > 0) startLevel(i);
+            else alert("No lives left!");
+        };
         path.appendChild(node);
     }
 }
 
 function startLevel(lvl) {
     state.currentLvl = lvl;
-    state.moves = 25 - Math.floor(lvl/10); 
-    state.current = 0;
-    state.isLock = false;
+    state.moves = Math.max(10, 30 - Math.floor(lvl/10));
+    state.current = 0; state.isLock = false;
 
     const cycle = lvl % 3;
-    if(cycle === 1) { state.type = 'teddy'; state.target = 4 + Math.floor(lvl/5); }
-    else if(cycle === 2) { state.type = 'score'; state.target = 1000 + (lvl * 250); }
-    else { state.type = 'collect'; state.target = 12 + lvl; state.item = CANDIES[lvl % 6]; }
+    if(cycle === 1) { state.type = 'teddy'; state.target = 4 + Math.floor(lvl/12); }
+    else if(cycle === 2) { state.type = 'score'; state.target = 1000 + (lvl * 350); }
+    else { state.type = 'collect'; state.target = 15 + Math.floor(lvl/2); state.item = CANDIES[lvl % 6]; }
 
     document.getElementById('nav-bar').style.display = 'none';
     document.getElementById('game-screen').style.display = 'flex';
@@ -236,10 +323,10 @@ function findMove() {
 
 async function shuffleBoard() {
     state.isLock = true;
-    document.getElementById('board').classList.add('shuffling');
-    await new Promise(r => setTimeout(r, 800));
+    document.getElementById('board').classList.add('shake');
+    await new Promise(r => setTimeout(r, 400));
     createBoard();
-    document.getElementById('board').classList.remove('shuffling');
+    document.getElementById('board').classList.remove('shake');
     state.isLock = false; resetHintTimer();
 }
 
@@ -263,6 +350,7 @@ window.ontouchend = (e) => {
 
 async function trySwap(r1, c1, r2, c2) {
     state.isLock = true; resetHintTimer();
+    playSFX('swap');
     let a = state.board[r1][c1], b = state.board[r2][c2];
     a.style.left = c2*CELL+'px'; a.style.top = r2*CELL+'px';
     b.style.left = c1*CELL+'px'; b.style.top = r1*CELL+'px';
@@ -295,6 +383,11 @@ function checkMatches() {
 }
 
 async function processMatches(m) {
+    if(m.length > 0) {
+        playSFX('pop');
+        document.getElementById('board').classList.add('shake');
+        setTimeout(() => document.getElementById('board').classList.remove('shake'), 200);
+    }
     while(m.length > 0) {
         m.forEach(c => {
             for(let r=0; r<SIZE; r++) for(let col=0; col<SIZE; col++) {
@@ -307,9 +400,9 @@ async function processMatches(m) {
                     state.board[r][col] = null;
                 }
             }
-            c.style.transform = 'scale(0)';
+            c.classList.add('pop-effect');
         });
-        await new Promise(r => setTimeout(r, 200));
+        await new Promise(r => setTimeout(r, 250));
         m.forEach(c => c.remove());
         await fall(); updateUI();
         await new Promise(r => setTimeout(r, 250));
@@ -340,9 +433,8 @@ async function fall() {
 function updateUI() {
     let tTxt = "";
     if(state.type === 'teddy') tTxt = `Rescue: ${document.querySelectorAll('.has-teddy').length} 🧸`;
-    else if(state.type === 'score') tTxt = `Score: ${state.current}/${state.target}`;
+    else if(state.type === 'score') tTxt = `Target: ${state.current}/${state.target}`;
     else tTxt = `Collect ${state.item}: ${state.current}/${state.target}`;
-    
     document.getElementById('targetTxt').innerText = tTxt;
     document.getElementById('moveVal').innerText = state.moves;
 }
@@ -354,30 +446,39 @@ function checkStatus() {
     else if(state.type === 'collect' && state.current >= state.target) win = true;
 
     if(win) {
-        state.isLock = true;
-        userData.coins += 50; // Win reward
+        state.isLock = true; playSFX('win');
+        userData.coins += 50;
         if(state.currentLvl === userData.unlocked) userData.unlocked++;
         save(); document.getElementById('win-overlay').style.display = 'flex';
     } else if(state.moves <= 0) {
-        state.isLock = true; userData.lives--; save(); document.getElementById('lose-overlay').style.display = 'flex';
+        state.isLock = true; playSFX('fail');
+        
+        // Deduct life and start refill timer if it was full
+        if(userData.lives === 5) userData.lastLifeTime = Date.now();
+        userData.lives = Math.max(0, userData.lives - 1);
+        
+        save(); document.getElementById('lose-overlay').style.display = 'flex';
     } else { state.isLock = false; resetHintTimer(); }
 }
 
 function exitToMap() {
-    document.getElementById('game-screen').style.display = 'none';
-    document.getElementById('nav-bar').style.display = 'flex';
-    document.querySelectorAll('.overlay').forEach(o => o.style.display = 'none');
-    switchTab('map');
+    showAd(() => {
+        document.getElementById('game-screen').style.display = 'none';
+        document.getElementById('nav-bar').style.display = 'flex';
+        document.querySelectorAll('.overlay').forEach(o => o.style.display = 'none');
+        switchTab('map');
+    });
 }
 
 function claimDaily() {
     if(Date.now() - userData.lastDaily > 86400000) {
         userData.coins += 200; userData.lastDaily = Date.now(); save();
-        alert("200 Coins Added!");
-    } else { alert("Come back tomorrow!"); }
+        alert("200 Coins Added to Balance!");
+    } else { alert("Come back in 24 hours!"); }
 }
 
-save(); initMap();
+// Initial Boot
+save(); checkLifeRefill(); initMap();
 </script>
 </body>
 </html>
